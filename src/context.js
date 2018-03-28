@@ -1,27 +1,66 @@
 /**
  * @file context对象原型
  */
+let proto = {};
 
-module.exports = {
+function delegateSet(property, name) {
+    proto.__defineSetter__(name, function (val) {
+        this[property][name] = val;
+    });
+}
 
-    get query() {
-        return this.request.query;
-    },
+function delegateGet(property, name) {
+    proto.__defineGetter__(name, function () {
+        return this[property][name];
+    });
+}
 
-    get body() {
-        return this.response.body;
-    },
+let requestSet = [];
+let requestGet = ['query'];
 
-    set body(data) {
-        this.response.body = data;
-    },
+let responseSet = ['body', 'status'];
+let responseGet = responseSet;
 
-    get status() {
-        return this.response.status;
-    },
+requestSet.forEach(ele => {
+    delegateSet('request', ele);
+});
 
-    set status(statusCode) {
-        this.response.status = statusCode;
-    }
+requestGet.forEach(ele => {
+    delegateGet('request', ele);
+});
 
-};
+responseSet.forEach(ele => {
+    delegateSet('response', ele);
+});
+
+responseGet.forEach(ele => {
+    delegateGet('response', ele);
+});
+
+module.exports = proto;
+
+// 上述代码等同于下面：
+
+// module.exports = {
+
+//     get query() {
+//         return this.request.query;
+//     },
+
+//     get body() {
+//         return this.response.body;
+//     },
+
+//     set body(data) {
+//         this.response.body = data;
+//     },
+
+//     get status() {
+//         return this.response.status;
+//     },
+
+//     set status(statusCode) {
+//         this.response.status = statusCode;
+//     }
+
+// };

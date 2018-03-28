@@ -52,7 +52,7 @@ class Application extends EventEmitter {
             }
 
             let len = this.middlewares.length;
-            let next = () => {
+            let next = async () => {
                 return Promise.resolve();
             };
             for (let i = len - 1; i >= 0; i--) {
